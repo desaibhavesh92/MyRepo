@@ -1,8 +1,5 @@
-package com.zydexindustries.zydex.utils;
+package com.api;
 
-/**
- * Created by Bhavesh Desai
- */
 public class APIResponse {
     private int responseCode;
     private String responseMessage;

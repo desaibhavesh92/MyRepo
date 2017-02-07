@@ -1,4 +1,4 @@
-package com.zydexindustries.zydex.utils;
+package com.api;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -13,13 +13,10 @@ import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 
-/**
- * Created by Bhavesh Desai
- */
 public class CallAPI {
     private final static int CONNECTION_TIME_OUT = 20 * 1000;
-    private static final String strURL = "http://107.150.58.5:8080/web/";     /*Live*/
-//                private static final String strURL = "http://192.168.0.144:8089/web/";       /*Local*/
+    // TODO: Change your service URL.
+    private static final String strURL = "url";
     private static final String TAG = "CallAPI";
 
 
@@ -175,53 +172,5 @@ public class CallAPI {
         void onSuccess(int responseCode, String strResponse);
 
         void onFailure(int responseCode, String strResponse);
-    }
-
-    public static void getAddress(final String latlng, final ResultCallBack resultCallBack) {
-
-        new AsyncTask<Void, Void, APIResponse>() {
-            @Override
-            protected APIResponse doInBackground(Void... params) {
-                APIResponse apiResponse = new APIResponse(0, "");
-                try {
-                    URL url = new URL("http://maps.googleapis.com/maps/api/geocode/json?latlng=" + latlng + "&sensor=true");
-
-                    Log.d(TAG, "doInBackground: URL: " + url.toString());
-//                    URL url = new URL(strURL);
-                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                    urlConnection.setConnectTimeout(CONNECTION_TIME_OUT);
-                    urlConnection.setRequestProperty("Content-Type", "application/json");
-                    urlConnection.setRequestProperty("Content-Language", "en-US");
-                    urlConnection.setRequestProperty("Accept", "application/json");
-                    urlConnection.setUseCaches(false);
-                    urlConnection.setRequestMethod("GET");
-                    int responseCode = urlConnection.getResponseCode();
-                    String response;
-                    if (responseCode == 200) {
-                        response = getResponseText(urlConnection.getInputStream());
-                    } else {
-                        response = getResponseText(urlConnection.getErrorStream());
-                        resultCallBack.onFailure(responseCode, response);
-                    }
-                    urlConnection.disconnect();
-                    apiResponse = new APIResponse(responseCode, response);
-                    return apiResponse;
-                } catch (SocketTimeoutException e) {
-                    return apiResponse;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return apiResponse;
-                }
-            }
-
-            @Override
-            protected void onPostExecute(APIResponse result) {
-                if (result.getResponseCode() == 200) {
-                    resultCallBack.onSuccess(result.getResponseCode(), result.getResponseMessage());
-                } else {
-                    resultCallBack.onFailure(result.getResponseCode(), result.getResponseMessage());
-                }
-            }
-        }.execute();
     }
 }
